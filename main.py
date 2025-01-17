@@ -46,6 +46,8 @@ def read_root() -> dict:
 @app.post("/api/translate/", response_model=TranslationResponse)
 def translate_text(request: TranslationRequest):
     try:
+        request.lang = 'ru'
+        request.method = 'offline'
         logging.info(f"Translating text: {request.text}")
         translated_text = split_translate_merge(request.text, request.lang, verbose=True)
         return TranslationResponse(translated_text=translated_text)
