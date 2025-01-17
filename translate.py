@@ -1,5 +1,11 @@
-import translators as ts
-from .translator.madlad import MADLAD400Translator as TranslationModel
+# try:
+#     # import translators as ts
+
+# except:
+ts = None
+
+
+from translator.madlad import MADLAD400Translator as TranslationModel
 class TranslatorWrapper:
     _instance = None
     _dlt_model = None
@@ -13,6 +19,7 @@ class TranslatorWrapper:
     @staticmethod
     def translate(chunk, lang=None, method="offline"):
         if method == "api":
+            assert ts, "Please install the required libraries to use this method"
             return ts.translate_text(
                 chunk,
                 from_language=lang,
