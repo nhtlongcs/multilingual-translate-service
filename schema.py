@@ -1,11 +1,11 @@
-from typing import List
+from typing import List, Optional
 from pydantic import BaseModel
 
 # Request and response models
 class TranslationRequest(BaseModel):
     text: str
-    lang: str = None
-    method: str = "offline"
+    lang: Optional[str] = None
+    method: Optional[str] = "offline"
 
 class TranslationResponse(BaseModel):
     translated_text: str
