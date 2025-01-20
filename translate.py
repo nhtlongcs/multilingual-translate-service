@@ -1,5 +1,6 @@
 ts = None
 
+
 from translator.madlad import MADLAD400Translator as TranslationModel
 class TranslatorWrapper:
     _instance = None

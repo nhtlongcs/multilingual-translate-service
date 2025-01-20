@@ -11,8 +11,9 @@ app = FastAPI()
 from functools import lru_cache
 
 @lru_cache(maxsize=128)
-def split_translate_merge(sentence, lang, verbose=False):
+def split_translate_merge(sentence, lang, api=False, verbose=False):
     mt = TranslatorWrapper()
+    method = "offline" if not api else "api"
     if lang == "en" or lang is None:
         return sentence
     try:
@@ -22,7 +23,7 @@ def split_translate_merge(sentence, lang, verbose=False):
             for i in range(0, len(sentence), chunk_size)
         ]
         translated_chunks = [
-            mt.translate(chunk, lang, method="offline")
+            mt.translate(chunk, lang, method=method)
             for chunk in chunks
         ]
         merged_sentence = "".join(translated_chunks)
@@ -46,27 +47,28 @@ def read_root() -> dict:
 @app.post("/api/translate/", response_model=TranslationResponse)
 def translate_text(request: TranslationRequest):
     try:
-        request.lang = 'ru'
-        request.method = 'offline'
+        # request.lang = 'ru'
+        # request.method = 'offline'
         logging.info(f"Translating text: {request.text}")
-        translated_text = split_translate_merge(request.text, request.lang, verbose=True)
+        use_api = request.method == "api"
+        translated_text = split_translate_merge(request.text, request.lang, api=use_api, verbose=True)
         return TranslationResponse(translated_text=translated_text)
     except ValueError as e:
         logging.error(f"Translation error: {e}")
         raise HTTPException(status_code=400, detail=str(e))
 
-# @app.get("/api/translate/bulk/", response_model=BulkTranslationResponse)
-# def translate_texts(texts: List[str], lang: str = 'ru', method: str = "offline"):
-#     try:
-#         logging.info(f"Translating bulk texts: {len(texts)} items")
-#         translated_texts = [
-#             split_translate_merge(text, lang, verbose=True)
-#             for text in texts
-#         ]
-#         return BulkTranslationResponse(translated_texts=translated_texts)
-#     except ValueError as e:
-#         logging.error(f"Bulk translation error: {e}")
-#         raise HTTPException(status_code=400, detail=str(e))
+@app.post("/api/translate/bulk/", response_model=BulkTranslationResponse)
+def translate_texts(request: BulkTranslationRequest):
+    try:
+        # request.lang = 'ru'
+        use_api = request.method == "api"
+        # request.method = 'offline'
+        logging.info(f"Translating {len(request.texts)} texts")
+        translated_texts = [split_translate_merge(text, request.lang, api=use_api) for text in request.texts]
+        return BulkTranslationResponse(translated_texts=translated_texts)
+    except ValueError as e:
+        logging.error(f"Translation error: {e}")
+        raise HTTPException(status_code=400, detail=str(e))
 
 if __name__ == "__main__":
     import uvicorn
