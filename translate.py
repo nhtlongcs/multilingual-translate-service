@@ -1,4 +1,6 @@
-ts = None
+import os
+os.environ['translators_default_region'] = 'xxx'
+import translators as ts
 
 
 from translator.madlad import MADLAD400Translator as TranslationModel
@@ -15,6 +17,7 @@ class TranslatorWrapper:
     @staticmethod
     def translate(chunk, lang=None, method="offline"):
         if method == "api":
+            assert lang, "Language code is required for API translation"
             assert ts, "Please install the required libraries to use this method"
             return ts.translate_text(
                 chunk,

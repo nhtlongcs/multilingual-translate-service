@@ -51,7 +51,7 @@ def translate_text(request: TranslationRequest):
         # request.method = 'offline'
         logging.info(f"Translating text: {request.text}")
         use_api = request.method == "api"
-        translated_text = split_translate_merge(request.text, request.lang, api=use_api, verbose=True)
+        translated_text = split_translate_merge(request.text, request.lang, api=use_api)
         return TranslationResponse(translated_text=translated_text)
     except ValueError as e:
         logging.error(f"Translation error: {e}")

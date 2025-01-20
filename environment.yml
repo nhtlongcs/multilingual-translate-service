@@ -38,7 +38,7 @@ dependencies:
     - sentencepiece
     - sentence-transformers
     - langdetect
-    - translators
+    - translators=5.8.6
     - nltk
     # --- utils ---
     - notebook

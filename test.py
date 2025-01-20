@@ -10,5 +10,13 @@ def test_translate():
     response = requests.post(url, json=body)
     print(response.json())
 
+    body ={
+        "text": "### CHỦ ĐỀ ĐẠI SỐ 1",
+        "lang": "vi",
+        "method": "api"
+    }
+    response = requests.post(url, json=body)
+    print(response.json())
+
 if __name__ == '__main__':
     test_translate()
